@@ -1,29 +1,11 @@
-# app.py
-from dash import Dash, dcc, html, Input, Output
-import dash_bootstrap_components as dbc
-import plotly.express as px
-import pandas as pd
+import dash
+from dash import html, dcc, Input, Output
 
-# --- SAMPLE DATA (placeholder only) ---
-df_sample = pd.DataFrame({
-    "date": pd.date_range("2025-01-01", periods=12, freq="M"),
-    "usage": [50, 60, 55, 80, 75, 90, 120, 110, 95, 85, 70, 65],
-    "purchases": [60, 55, 65, 70, 90, 85, 140, 100, 100, 80, 70, 60]
-})
+# --- Initialize app ---
+app = dash.Dash(__name__, suppress_callback_exceptions=True)
+server = app.server  # for Render
 
-fig_usage = px.line(df_sample, x="date", y="usage", title="Ingredient Usage (Placeholder)")
-fig_purchases = px.bar(df_sample, x="date", y="purchases", title="Purchases (Placeholder)")
-fig_forecast = px.line(
-    df_sample.assign(forecast=[u * 1.1 for u in df_sample.usage]),
-    x="date", y="forecast", title="Forecast (Placeholder)"
-)
-
-# --- APP SETUP ---
-external_stylesheets = [dbc.themes.BOOTSTRAP]
-app = Dash(__name__, external_stylesheets=external_stylesheets)
-server = app.server  # for Render.com
-
-# --- HEADER WITH LOGO ---
+# --- Header ---
 header = html.Header(
     [
         html.Div(
@@ -37,7 +19,7 @@ header = html.Header(
                 html.Div(
                     children=[
                         html.Div("Mai Shan Yun — Inventory Intelligence", className="header-title"),
-                        html.Div("College Station — Aggie Edition", className="header-sub"),
+                        html.Div("College Station — Aggie Edition", className="header-sub")
                     ],
                     className="header-text"
                 ),
@@ -49,19 +31,77 @@ header = html.Header(
     id="top-header"
 )
 
-# --- SIDEBAR ---
+# --- Sidebar ---
 sidebar = html.Div(
-    [
-        html.Div(className="logo-wrap", children=[
-            html.Img(src="/assets/logo-placeholder.png", className="logo", alt="Sidebar Logo"),
-        ]),
-        html.Hr(className="sidebar-divider"),
-        html.Div([
-            dcc.RadioItems(
-                id="nav-selection",
-                options=[
-                    {"label": "Inventory Overview", "value": "overview"},
-                    {"label": "Ingredient Usage", "value": "usage"},
-                    {"label": "Purchases & Shipments", "value": "purchases"},
-                    {"label": "Forecasting", "value": "forecasting"},
+    className="sidebar",
+    id="sidebar",
+    children=[
+        html.Div(
+            className="logo-wrap",
+            children=[
+                html.Img(src="/assets/logo-placeholder.png", className="logo", alt="Mai Shan Yun Logo"),
+                html.H2("Dashboard", className="sidebar-title"),
+            ]
+        ),
+        html.Div(
+            className="nav-links",
+            children=[
+                html.Label("Select Graph View:", className="nav-label"),
+                dcc.Dropdown(
+                    id="graph-selector",
+                    options=[
+                        {"label": "Inventory Overview", "value": "inventory"},
+                        {"label": "Ingredient Usage", "value": "ingredients"},
+                        {"label": "Purchases & Shipments", "value": "purchases"},
+                        {"label": "Forecasting", "value": "forecasting"},
+                    ],
+                    value="inventory",
+                    clearable=False,
+                    className="dropdown"
+                ),
+            ],
+        ),
+    ]
+)
 
+# --- Main content area ---
+main_content = html.Div(
+    className="main-content",
+    id="main-content",
+    children=[
+        dcc.Graph(id="main-graph", figure={}),
+        html.Div(id="graph-description", className="graph-desc")
+    ]
+)
+
+# --- Layout ---
+app.layout = html.Div(
+    className="dashboard-container",
+    children=[header, html.Div(className="content-area", children=[sidebar, main_content])]
+)
+
+# --- Callbacks ---
+@app.callback(
+    Output("main-graph", "figure"),
+    Output("graph-description", "children"),
+    Input("graph-selector", "value")
+)
+def update_graph(selected):
+    # Placeholder content for now
+    if selected == "inventory":
+        desc = "Overview of all inventory items and usage trends."
+    elif selected == "ingredients":
+        desc = "Monthly ingredient usage and top/least used ingredients."
+    elif selected == "purchases":
+        desc = "Shipment and purchase analysis by date."
+    elif selected == "forecasting":
+        desc = "Predictive trends and restock suggestions."
+    else:
+        desc = "Select a view to explore inventory intelligence."
+
+    return {}, desc
+
+
+# --- Run server ---
+if __name__ == "__main__":
+    app.run_server(host="0.0.0.0", port=8050, debug=False)

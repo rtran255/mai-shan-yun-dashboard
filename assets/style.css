@@ -1,76 +1,106 @@
-:root {
-  --accent: #500000; /* Aggie maroon */
-  --bg: #fff;
-  --text: #000;
-  --subtle: #f2f2f2;
-}
-
+/* --- Base Layout --- */
 body {
-  font-family: 'Helvetica Neue', sans-serif;
-  background-color: var(--bg);
-  color: var(--text);
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background-color: #000; /* deep black background */
+  color: #f0f0f0;
   margin: 0;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
+  padding: 0;
+  overflow-x: hidden;
 }
 
+/* --- Header --- */
 .header {
-  background-color: var(--text);
-  color: var(--bg);
+  background-color: #111;
+  color: #f0f0f0;
+  padding: 1rem 2rem;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 1rem 2rem;
+  justify-content: start;
   position: sticky;
   top: 0;
-  z-index: 100;
-  transition: all 0.3s ease-in-out;
+  z-index: 1000;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
 }
-
 .header .logo {
-  height: 40px;
-  transition: height 0.3s ease;
+  height: 45px;
+  margin-right: 1rem;
+}
+.header h1 {
+  font-size: 1.6rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
 }
 
-.header.minimized .logo {
-  height: 25px;
-}
-
+/* --- Layout Container --- */
 .container {
   display: flex;
-  flex: 1;
+  min-height: calc(100vh - 80px);
 }
 
+/* --- Sidebar --- */
 .sidebar {
-  background-color: var(--subtle);
-  width: 250px;
-  padding: 2rem 1rem;
-  border-right: 2px solid var(--accent);
+  width: 260px;
+  background-color: #1a1a1a;
+  padding: 1.5rem;
+  border-right: 2px solid #500000;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.sidebar h3 {
+  color: #fff;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  border-bottom: 1px solid #500000;
+  padding-bottom: 0.5rem;
+}
+.sidebar-radio {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+input[type="radio"] {
+  accent-color: #500000;
+  transform: scale(1.2);
 }
 
-.sidebar h3 {
-  color: var(--accent);
+/* --- Main Content --- */
+.content {
+  flex-grow: 1;
+  padding: 2rem;
+  background-color: #0d0d0d;
+}
+.content h2 {
+  font-size: 1.5rem;
+  color: #fff;
   margin-bottom: 1rem;
 }
 
-.sidebar ul {
-  list-style: none;
-  padding: 0;
+/* --- Graph Styling --- */
+.js-plotly-plot {
+  background-color: transparent !important;
 }
 
-.sidebar li {
-  margin: 0.5rem 0;
-  cursor: pointer;
-  transition: color 0.2s;
+/* --- Scroll/Minimizing Header Animation --- */
+@keyframes shrinkHeader {
+  from { padding: 1rem 2rem; }
+  to { padding: 0.5rem 2rem; background-color: #0a0a0a; }
+}
+body.scrolled .header {
+  animation: shrinkHeader 0.3s forwards;
 }
 
-.sidebar li:hover {
-  color: var(--accent);
-}
-
-.content {
-  flex: 1;
-  padding: 2rem;
-  background-color: var(--bg);
+/* --- Responsive --- */
+@media (max-width: 900px) {
+  .container {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 2px solid #500000;
+  }
 }

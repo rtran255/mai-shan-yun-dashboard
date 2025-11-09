@@ -63,4 +63,5 @@ sidebar = html.Div(
                     {"label": "Inventory Overview", "value": "overview"},
                     {"label": "Ingredient Usage", "value": "usage"},
                     {"label": "Purchases & Shipments", "value": "purchases"},
-                    {"label": "Forecasting", "value": "f
+                    {"label": "Forecasting", "value": "forecasting"},
+

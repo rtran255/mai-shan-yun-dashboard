@@ -1,96 +1,66 @@
-import dash
-from dash import html, dcc, Input, Output
+# app.py
+from dash import Dash, dcc, html, Input, Output
 import dash_bootstrap_components as dbc
 import plotly.express as px
 import pandas as pd
-from data.placeholder_data import get_placeholder_data
 
-# === Load placeholder data ===
-df = get_placeholder_data()
+# --- SAMPLE DATA (placeholder only) ---
+df_sample = pd.DataFrame({
+    "date": pd.date_range("2025-01-01", periods=12, freq="M"),
+    "usage": [50, 60, 55, 80, 75, 90, 120, 110, 95, 85, 70, 65],
+    "purchases": [60, 55, 65, 70, 90, 85, 140, 100, 100, 80, 70, 60]
+})
 
-# === Initialize Dash app ===
-app = dash.Dash(
-    __name__,
-    external_stylesheets=[dbc.themes.BOOTSTRAP],
-    suppress_callback_exceptions=True
-)
-server = app.server
-
-# === Define reusable example figures (created once, not regenerated each render) ===
-fig_inventory = px.line(
-    df, x="Month", y="Inventory Level",
-    title="Inventory Over Time", markers=True
-)
-fig_usage = px.bar(
-    df, x="Month", y="Inventory Level",
-    title="Ingredient Usage Trends",
-    color_discrete_sequence=["#500000"]
-)
-fig_forecast = px.scatter(
-    df, x="Month", y="Inventory Level",
-    title="Forecasting (Placeholder)",
-    trendline="ols"
+fig_usage = px.line(df_sample, x="date", y="usage", title="Ingredient Usage (Placeholder)")
+fig_purchases = px.bar(df_sample, x="date", y="purchases", title="Purchases (Placeholder)")
+fig_forecast = px.line(
+    df_sample.assign(forecast=[u * 1.1 for u in df_sample.usage]),
+    x="date", y="forecast", title="Forecast (Placeholder)"
 )
 
-# === Freeze layout config to prevent continuous updates ===
-graph_config = {"staticPlot": True, "displayModeBar": False}
+# --- APP SETUP ---
+external_stylesheets = [dbc.themes.BOOTSTRAP]
+app = Dash(__name__, external_stylesheets=external_stylesheets)
+server = app.server  # for Render.com
 
-# === Define layout as a function for clean instantiation ===
-def serve_layout():
-    return html.Div([
-        # Header
-        html.Header([
-            html.Img(src="/assets/logo.svg", className="logo"),
-            html.H1("Mai Shan Yun Inventory Intelligence")
-        ], className="header"),
-
-        # Main container
-        html.Div([
-            # Sidebar navigation
-            html.Nav([
-                html.H3("Dashboard Navigation"),
-                dcc.RadioItems(
-                    id="page-selector",
-                    options=[
-                        {"label": "Inventory Overview", "value": "inventory"},
-                        {"label": "Usage Trends", "value": "usage"},
-                        {"label": "Forecasting", "value": "forecast"}
+# --- HEADER WITH LOGO ---
+header = html.Header(
+    [
+        html.Div(
+            className="header-left",
+            children=[
+                html.Img(
+                    src="/assets/logo-placeholder.png",
+                    className="header-logo",
+                    alt="Mai Shan Yun Logo"
+                ),
+                html.Div(
+                    children=[
+                        html.Div("Mai Shan Yun — Inventory Intelligence", className="header-title"),
+                        html.Div("College Station — Aggie Edition", className="header-sub"),
                     ],
-                    value="inventory",
-                    className="sidebar-radio"
-                )
-            ], className="sidebar"),
-
-            # Content area
-            html.Main([
-                html.H2(id="graph-title", children="Inventory Overview"),
-                dcc.Graph(
-                    id="main-graph",
-                    figure=fig_inventory,
-                    config=graph_config
-                )
-            ], className="content")
-        ], className="container")
-    ])
-
-app.layout = serve_layout
-
-# === Callback for switching graphs ===
-@app.callback(
-    Output("main-graph", "figure"),
-    Output("graph-title", "children"),
-    Input("page-selector", "value")
+                    className="header-text"
+                ),
+            ],
+        ),
+        html.Button("—", id="toggle-header", title="Minimize header", className="min-btn"),
+    ],
+    className="top-header",
+    id="top-header"
 )
-def update_graph(selected_page):
-    """Switch between graphs without reloading layout."""
-    if selected_page == "usage":
-        return fig_usage, "Usage Trends"
-    elif selected_page == "forecast":
-        return fig_forecast, "Forecasting (Placeholder)"
-    else:
-        return fig_inventory, "Inventory Overview"
 
-# === Run server ===
-if __name__ == "__main__":
-    # debug=False prevents autoreload that can re-trigger loops on Render
-    app.run_server(host="0.0.0.0", port=8080, debug=False)
+# --- SIDEBAR ---
+sidebar = html.Div(
+    [
+        html.Div(className="logo-wrap", children=[
+            html.Img(src="/assets/logo-placeholder.png", className="logo", alt="Sidebar Logo"),
+        ]),
+        html.Hr(className="sidebar-divider"),
+        html.Div([
+            dcc.RadioItems(
+                id="nav-selection",
+                options=[
+                    {"label": "Inventory Overview", "value": "overview"},
+                    {"label": "Ingredient Usage", "value": "usage"},
+                    {"label": "Purchases & Shipments", "value": "purchases"},
+                    {"label": "Forecasting", "value": "f

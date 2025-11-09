@@ -1,7 +1,7 @@
 /* --- Base Layout --- */
 body {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  background-color: #000; /* deep black background */
+  background-color: #000;
   color: #f0f0f0;
   margin: 0;
   padding: 0;
@@ -20,7 +20,7 @@ body {
   top: 0;
   z-index: 1000;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 .header .logo {
   height: 45px;
@@ -32,7 +32,7 @@ body {
   letter-spacing: 0.05em;
 }
 
-/* --- Layout Container --- */
+/* --- Main Layout --- */
 .container {
   display: flex;
   min-height: calc(100vh - 80px);
@@ -79,12 +79,12 @@ input[type="radio"] {
   margin-bottom: 1rem;
 }
 
-/* --- Graph Styling --- */
+/* --- Graph --- */
 .js-plotly-plot {
   background-color: transparent !important;
 }
 
-/* --- Scroll/Minimizing Header Animation --- */
+/* --- Scroll/Minimize Header Animation --- */
 @keyframes shrinkHeader {
   from { padding: 1rem 2rem; }
   to { padding: 0.5rem 2rem; background-color: #0a0a0a; }
@@ -104,3 +104,4 @@ body.scrolled .header {
     border-bottom: 2px solid #500000;
   }
 }
+
